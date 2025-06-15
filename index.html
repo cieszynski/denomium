@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>denomium</title>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <h2>WebSocket Test</h2>
+    <p>Sends a ping every five seconds</p>
+    <div id="output"></div>
+    <script>
+        const run = async () => {
+            const output = document.querySelector("#output");
+
+            function writeToScreen(message) {
+                output.insertAdjacentHTML("afterbegin", `<p>${message}</p>`);
+            }
+
+            const wss = new WebSocketStream(`ws://localhost:${location.port}`);
+            wss.closed.then((result) => {
+                writeToScreen("DISCONNECTED");
+            });
+
+            const { readable, writable, extensions, protocol } = await wss.opened;
+
+            writeToScreen("CONNECTED");
+
+            const reader = readable.getReader();
+            reader.closed
+                .then(() => {
+                    writeToScreen("CLOSED");
+                })
+                .catch((err) => {
+                    writeToScreen(err);
+                });
+
+            const writer = writable.getWriter();
+            writer.closed
+                .then(() => {
+                    writeToScreen("CLOSED");
+                })
+                .catch((err) => {
+                    writeToScreen(err);
+                });
+            writer.ready
+                .then(() => {
+                    writeToScreen("ready");
+                })
+                .catch((err) => {
+                    writeToScreen(err);
+                });
+                
+            writer.write("ping");
+            writeToScreen("SENT: ping");
+
+            while (true) {
+                try {
+                    const { value, done } = await reader.read();
+                    writeToScreen(`RECEIVED: ${value}`);
+                    if (done) {
+                        break;
+                    }
+
+                    setTimeout(() => {
+                        writer.write("ping");
+                        writeToScreen("SENT: ping");
+                    }, 5000);
+                } catch ({ name, message }) {
+                    writeToScreen(message)
+                }
+            }
+        }
+
+        run();
+    </script>
+    <script type="bla">
+        const output = document.querySelector("#output");
+        const websocket = new WebSocket(`ws://localhost:${location.port}`);
+        let pingInterval;
+
+        function writeToScreen(message) {
+            output.insertAdjacentHTML("afterbegin", `<p>${message}</p>`);
+        }
+
+        function sendMessage(message) {
+            writeToScreen(`SENT: ${message}`);
+            websocket.send(message);
+        }
+
+        websocket.onopen = (e) => {
+            writeToScreen("CONNECTED");
+            sendMessage("ping");
+            pingInterval = setInterval(() => {
+                sendMessage("ping");
+            }, 5000);
+        };
+
+        websocket.onclose = (e) => {
+            writeToScreen("DISCONNECTED");
+            clearInterval(pingInterval);
+            window.close()
+        };
+
+        websocket.onmessage = (e) => {
+            writeToScreen(`RECEIVED: ${e.data}`);
+        };
+
+        websocket.onerror = (e) => {
+            writeToScreen(`ERROR: ${e.data}`);
+        };
+    </script>
+</body>
+
+</html>
