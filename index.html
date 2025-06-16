@@ -4,13 +4,15 @@
 <head>
     <title>denomium</title>
     <meta charset="utf-8">
+    <link rel="manifest" href="manifest.json">
+    <script src="denomium.js"></script>
 </head>
 
 <body>
-    <h2>WebSocket Test</h2>
-    <p>Sends a ping every five seconds</p>
-    <div id="output"></div>
-    <script>
+    <h1>denonium</h1>
+    <button onclick="denomium.send('sqlite', 'execute', {ms:1000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST1</button>
+    <button onclick="denomium.send('sqlite', 'execute', {ms: 3000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST3</button>
+    <script type="bla">
         const run = async () => {
             const output = document.querySelector("#output");
 

@@ -21,6 +21,10 @@ switch (Deno.build.os) {
         break;
 }
 
+const watcher = Deno.watchFs("index.html");
+
+
+
 Deno.serve({
     port: 0,
     async handler(request) {
@@ -34,13 +38,13 @@ Deno.serve({
             console.log(import.meta.dirname + url.pathname);
 
             try {
-                const file = await Deno.open(import.meta.dirname + url.pathname, { 
-                    read: true 
+                const file = await Deno.open(import.meta.dirname + url.pathname, {
+                    read: true
                 });
-                
+
                 return new Response(file.readable);
-            } catch({name, message}) {
-                switch(name) {
+            } catch ({ name, message }) {
+                switch (name) {
                     case 'NotFound':
                         return new Response(message, { status: 404 });
                     default:
@@ -48,7 +52,7 @@ Deno.serve({
                 }
             }
         }
-        
+
         // If the request is a websocket upgrade,
         // we need to use the Deno.upgradeWebSocket helper
         const { socket, response } = Deno.upgradeWebSocket(request);
@@ -58,7 +62,12 @@ Deno.serve({
         };
         socket.onmessage = (event) => {
             console.log(`RECEIVED: ${event.data}`);
-            socket.send("pong");
+
+            const obj = JSON.parse(event.data);
+
+            setTimeout(() => {
+                socket.send(event.data);
+            }, obj?.ms ?? 1000);
         };
         socket.onclose = () => {
             console.log("DISCONNECTED");
@@ -68,11 +77,19 @@ Deno.serve({
 
         return response;
     },
-    onListen(event) {
+    async onListen(event) {
         new Deno.Command(browser, {
             args: [
                 `--app=http://localhost:${event.port}`
             ]
         }).spawn();
+
+/*         for await (const event of watcher) {
+            console.log(">>>> event", event);
+            socket.send(event.data);
+        } */
+    },
+    onfinished() {
+        watcher.close()
     }
 });

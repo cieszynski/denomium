@@ -1,5 +1,6 @@
 {
     "tasks": {
-        "start": "deno run --allow-all main.js"
+        "start": "deno run --allow-all main.js",
+        "compile": "deno compile --allow-all --include index.html --include denomium.js --include manifest.json --include android-chrome-192x192.png --include android-chrome-512x512.png main.js"
     }
 }
