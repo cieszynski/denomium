@@ -18,15 +18,12 @@ switch (Deno.build.os) {
         })
         break;
     case 'windows':
+        browser = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
         break;
 }
 
-const watcher = Deno.watchFs("index.html");
-
-
-
 Deno.serve({
-    port: 0,
+    port: 9999,
     async handler(request) {
         if (request.headers.get("upgrade") !== "websocket") {
             const url = new URL(request.url);
@@ -77,19 +74,14 @@ Deno.serve({
 
         return response;
     },
-    async onListen(event) {
+    onListen(event) {
         new Deno.Command(browser, {
             args: [
                 `--app=http://localhost:${event.port}`
             ]
         }).spawn();
-
-/*         for await (const event of watcher) {
-            console.log(">>>> event", event);
-            socket.send(event.data);
-        } */
     },
     onfinished() {
-        watcher.close()
+     
     }
 });
