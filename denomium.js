@@ -22,7 +22,7 @@ Object.defineProperty(globalThis, 'denomium', {
             }
 
             websocket.addEventListener('message', (event)=>{
-                console.debug(event.data);
+                console.debug('message', event.data);
             });
 
             this.send = (lib, verb, obj = {}) => {

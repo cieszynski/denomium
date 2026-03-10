@@ -4,14 +4,19 @@
 <head>
     <title>denomium</title>
     <meta charset="utf-8">
-    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="android-chrome-512x512.ico" />
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <script src="denomium.js"></script>
 </head>
 
 <body>
     <h1>denonium</h1>
-    <button onclick="denomium.send('sqlite', 'execute', {ms:1000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST1</button>
-    <button onclick="denomium.send('sqlite', 'execute', {ms: 3000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST3</button>
+    <button
+        onclick="denomium.send('sqlite', 'execute', {ms:1000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST1</button>
+    <button
+        onclick="denomium.send('sqlite', 'execute', {ms: 3000}).then(res=>alert(res)).catch(err=>alert('err'))">TEST3</button>
     <script type="bla">
         const run = async () => {
             const output = document.querySelector("#output");

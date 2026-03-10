@@ -1,6 +1,11 @@
-import { DatabaseSync } from 'node:sqlite';
+/* 
+Deno compile -A --include index.html --include denomium.js --include manifest.json --include favicon-16x16.png --include favicon-32x32.png --include favicon-192x192.png --include favicon-512x512.png --icon android-chrome-512x512.ico main.js 
+*/
 
-const database = new DatabaseSync(':memory:');
+/* icon: 8bpp, 1-bit alpha, 256-slot palette */
+
+import { DatabaseSync } from 'node:sqlite';
+const database = new DatabaseSync('test.sqlite');
 
 let browser;
 
@@ -23,6 +28,7 @@ switch (Deno.build.os) {
 }
 
 Deno.serve({
+    hostname: '127.0.0.1',
     port: 9999,
     async handler(request) {
         if (request.headers.get("upgrade") !== "websocket") {
@@ -32,7 +38,7 @@ Deno.serve({
                 url.pathname += 'index.html';
             }
 
-            console.log(import.meta.dirname + url.pathname);
+            console.log('handler', import.meta.dirname + url.pathname);
 
             try {
                 const file = await Deno.open(import.meta.dirname + url.pathname, {
@@ -82,6 +88,6 @@ Deno.serve({
         }).spawn();
     },
     onfinished() {
-     
+        console.log('onfinished')
     }
 });
